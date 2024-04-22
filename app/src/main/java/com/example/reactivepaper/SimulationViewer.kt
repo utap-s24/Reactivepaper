@@ -7,11 +7,13 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.hardware.Sensor
 import android.hardware.SensorManager
+import android.media.MediaPlayer
 import androidx.core.content.ContextCompat.getSystemService
 
 class SimulationViewer(width: Int, height: Int){
 
-    private val simulation = Simulation(width.toDouble(), height.toDouble(), cellSize = 70)
+    private val simulation = Simulation(width.toDouble(), height.toDouble(), cellSize = 100)
+
     private var fillPaint = Paint().apply {
         style = Paint.Style.FILL
         color = Color.BLACK

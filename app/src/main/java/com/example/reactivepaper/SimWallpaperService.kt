@@ -1,19 +1,15 @@
 package com.example.reactivepaper
 
 import android.content.Context
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventCallback
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
+import android.media.AudioAttributes
+import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.service.wallpaper.WallpaperService
-import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceHolder
-import java.security.AccessController.getContext
-import java.util.concurrent.Executor
+import java.io.File
 
 class SimWallpaperService : WallpaperService() {
     override fun onCreateEngine(): Engine {
@@ -23,11 +19,16 @@ class SimWallpaperService : WallpaperService() {
     inner class SimEngine : Engine() {
 
         private lateinit var simulation : SimulationViewer;
+        private lateinit var mediaPlayer: MediaPlayer;
+        private var playing = false;
 
         private val handler = Handler(Looper.getMainLooper())
         private val runnable = Runnable { nextFrame() }
 
         private val rotation = GyroSensor(this@SimWallpaperService)
+
+
+
 
         override fun onSurfaceCreated(holder: SurfaceHolder?) {
             super.onSurfaceCreated(holder)
@@ -36,6 +37,8 @@ class SimWallpaperService : WallpaperService() {
             simulation.drawFrame(canvas)
             holder.unlockCanvasAndPost(canvas)
             handler.postDelayed(runnable, 17)
+
+
         }
 
 //        override fun onSurfaceRedrawNeeded(holder: SurfaceHolder?) {
@@ -49,9 +52,16 @@ class SimWallpaperService : WallpaperService() {
             event?.let {
                 if (it.action == MotionEvent.ACTION_DOWN) {
 //                    simulation.changeGravity()
+                    if (playing){
+                        mediaPlayer.pause()
+                    }
+                    else {
+                        mediaPlayer.start()
+                    }
                 }
-
             }
+
+
 
         }
 

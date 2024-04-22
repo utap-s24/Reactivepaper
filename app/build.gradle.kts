@@ -9,12 +9,16 @@ android {
 
     defaultConfig {
         applicationId = "com.example.reactivepaper"
-        minSdk = 29
-        targetSdk = 34
+        minSdk = 26
+        targetSdk = 26
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+        }
     }
 
     buildTypes {
@@ -30,6 +34,14 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+//    splits {
+//        abi {
+//            isEnable = true
+//            reset()
+//            include("x86", "x86_64", "armeabi-v7a", "arm64-v8a")
+//            isUniversalApk = true
+//        }
+//    }
     kotlinOptions {
         jvmTarget = "1.8"
     }
@@ -52,4 +64,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation("com.github.yausername.youtubedl-android:library:-SNAPSHOT")
+    implementation("com.github.yausername.youtubedl-android:ffmpeg:-SNAPSHOT") // Optional
+    implementation("com.github.yausername.youtubedl-android:aria2c:-SNAPSHOT") // Optional
 }

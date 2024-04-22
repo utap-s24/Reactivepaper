@@ -59,22 +59,25 @@ class Simulation(private val width: Double, private val height: Double, private 
 
 
     fun updateParticles(time: Double) {
-        for (particle in particles) {
+        val substeps = 12
+        for (i in 0 until substeps){
+            for (particle in particles) {
 
-            particle.forceSum = calcForceSum()
+                particle.forceSum = calcForceSum()
 
 
-            particle.position = calcNextPos(particle, time)
+                particle.position = calcNextPos(particle, time / substeps)
 
-            particle.speed = addVector(particle.speed, particle.forceSum)
-            particle.speed = scaleVector(particle.speed, 0.8)
-            if (abs(particle.speed.first) < 0.05 && abs(particle.speed.second) < 0.05){
-                particle.speed = Pair(0.0, 0.0)
+                particle.speed = addVector(particle.speed, particle.forceSum)
+                particle.speed = scaleVector(particle.speed, 0.8)
+                if (abs(particle.speed.first) < 0.05 && abs(particle.speed.second) < 0.05){
+                    particle.speed = Pair(0.0, 0.0)
+                }
             }
-        }
-        fillGrid()
-        for (x in 0 until 12){
-            fixIntersectedParticles()
+            fillGrid()
+            for (x in 0 until 5){
+                fixIntersectedParticles()
+            }
         }
     }
 

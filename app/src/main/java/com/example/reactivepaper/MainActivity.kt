@@ -1,23 +1,39 @@
 package com.example.reactivepaper
 
+import android.content.Intent
+import android.media.AudioAttributes
+import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.navigation.NavigationView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.appcompat.app.AppCompatActivity
 import com.example.reactivepaper.databinding.ActivityMainBinding
+import com.google.android.material.navigation.NavigationView
+import com.yausername.ffmpeg.FFmpeg
+import com.yausername.youtubedl_android.YoutubeDL
+import com.yausername.youtubedl_android.YoutubeDL.getInstance
+import com.yausername.youtubedl_android.YoutubeDLException
+import com.yausername.youtubedl_android.YoutubeDLRequest
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.io.File
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+    private lateinit var mediaPlayer: MediaPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,9 +42,15 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.appBarMain.toolbar)
 
         binding.appBarMain.fab?.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null)
-                .setAnchorView(R.id.fab).show()
+            val coroutineScope = CoroutineScope(Dispatchers.Main)
+            coroutineScope.launch {
+                try {
+                    test()
+                } catch (e: Exception) {
+                    Log.e("TAG", "failed to get", e)
+                }
+
+            }
         }
 
         val navHostFragment =
@@ -54,6 +76,42 @@ class MainActivity : AppCompatActivity() {
             )
             setupActionBarWithNavController(navController, appBarConfiguration)
             it.setupWithNavController(navController)
+        }
+
+        requestPermission()
+
+        try {
+            YoutubeDL.getInstance().init(applicationContext)
+            FFmpeg.getInstance().init(applicationContext)
+        } catch (e: YoutubeDLException) {
+            Log.e("TAG", "failed to initialize youtubedl-android", e)
+        }
+
+
+
+    }
+
+    private fun requestPermission() {
+        val permission = android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+        if (checkSelfPermission(permission) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(permission), 1)
+        }
+        val permission2 = android.Manifest.permission.READ_EXTERNAL_STORAGE
+        if (checkSelfPermission(permission2) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(permission2), 1)
+        }
+    }
+
+    fun test(){
+        val youtubeDLDir = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+            "ReactivePaper"
+        )
+        val request = YoutubeDLRequest("https://www.youtube.com/watch?v=ApXoWvfEYVU&pp=ygUGbXVzaWNc")
+        request.addOption("-x")
+        request.addOption("-o", youtubeDLDir.absolutePath + "/%(title)s.%(ext)s")
+        getInstance().execute(request) { progress, etaInSeconds, line ->
+            println("$progress% (ETA $etaInSeconds seconds)")
         }
     }
 
