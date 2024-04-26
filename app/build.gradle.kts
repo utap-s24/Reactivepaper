@@ -9,8 +9,8 @@ android {
 
     defaultConfig {
         applicationId = "com.example.reactivepaper"
-        minSdk = 26
-        targetSdk = 26
+        minSdk = 29
+        targetSdk = 29
         versionCode = 1
         versionName = "1.0"
 

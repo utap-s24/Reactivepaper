@@ -9,6 +9,7 @@ import android.os.Environment
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -34,24 +35,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     private lateinit var mediaPlayer: MediaPlayer
+    private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.appBarMain.toolbar)
-
-        binding.appBarMain.fab?.setOnClickListener { view ->
-            val coroutineScope = CoroutineScope(Dispatchers.Main)
-            coroutineScope.launch {
-                try {
-                    test()
-                } catch (e: Exception) {
-                    Log.e("TAG", "failed to get", e)
-                }
-
-            }
-        }
 
         val navHostFragment =
             (supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment?)!!
@@ -102,18 +92,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun test(){
-        val youtubeDLDir = File(
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-            "ReactivePaper"
-        )
-        val request = YoutubeDLRequest("https://www.youtube.com/watch?v=ApXoWvfEYVU&pp=ygUGbXVzaWNc")
-        request.addOption("-x")
-        request.addOption("-o", youtubeDLDir.absolutePath + "/%(title)s.%(ext)s")
-        getInstance().execute(request) { progress, etaInSeconds, line ->
-            println("$progress% (ETA $etaInSeconds seconds)")
-        }
-    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val result = super.onCreateOptionsMenu(menu)

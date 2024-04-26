@@ -59,7 +59,7 @@ class Simulation(private val width: Double, private val height: Double, private 
 
 
     fun updateParticles(time: Double) {
-        val substeps = 12
+        val substeps = 10
         for (i in 0 until substeps){
             for (particle in particles) {
 
